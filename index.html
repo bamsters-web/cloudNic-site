@@ -1,62 +1,639 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>CloudNic Ltd.</title>
-  <link rel="stylesheet" href="css/style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudNic — Console & Computer Repair</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #14171B;
+    --panel: #1D2126;
+    --panel-raised: #23282E;
+    --line: #333A42;
+    --text: #ECEFF2;
+    --text-dim: #9AA3AD;
+    --teal: #00DCFB;
+    --teal-dim: #00A8C2;
+    --amber: #F2A93B;
+    --red-tag: #E2593B;
+    --radius: 4px;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,h2,h3,.mono{ font-family: 'Space Mono', monospace; }
+
+  a{ color: inherit; }
+
+  .eyebrow{
+    font-family:'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px;
+    background: var(--teal);
+    display:inline-block;
+  }
+
+  /* NAV */
+  header.site-nav{
+    position: fixed;
+    top:0; left:0; right:0;
+    z-index: 100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 18px 5vw;
+    background: rgba(20,23,27,0.82);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .logo{
+    font-family:'Space Mono', monospace;
+    font-weight:700;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  .logo span{ color: var(--teal); }
+  .logo-link{ display:flex; align-items:center; }
+  .logo-img{ height: 30px; width:auto; display:block; }
+  @media (max-width:480px){ .logo-img{ height:24px; } }
+
+  .nav-links{
+    display:flex;
+    gap: 28px;
+    font-size: 13px;
+    font-family:'Space Mono', monospace;
+    color: var(--text-dim);
+  }
+  .nav-links a{
+    text-decoration:none;
+    transition: color .2s ease;
+  }
+  .nav-links a:hover{ color: var(--teal); }
+  .nav-links a:focus-visible, a:focus-visible{
+    outline: 2px solid var(--teal);
+    outline-offset: 3px;
+  }
+
+  /* progress rail */
+  .rail{
+    position: fixed;
+    right: 26px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 90;
+    display:flex;
+    flex-direction:column;
+    gap: 14px;
+  }
+  .rail a{
+    width:9px; height:9px;
+    border-radius:50%;
+    border: 1px solid var(--text-dim);
+    display:block;
+    text-decoration:none;
+    transition: all .25s ease;
+  }
+  .rail a.active{
+    background: var(--teal);
+    border-color: var(--teal);
+    transform: scale(1.3);
+  }
+  @media (max-width: 800px){ .rail{ display:none; } }
+
+  section{
+    min-height: 100vh;
+    padding: 120px 8vw 90px;
+    display:flex;
+    align-items:center;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* reveal animation */
+  .reveal{
+    opacity:0;
+    transform: translateY(24px);
+    transition: opacity .7s ease, transform .7s ease;
+  }
+  .reveal.in{
+    opacity:1;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .reveal{ opacity:1; transform:none; transition:none; }
+    html{ scroll-behavior:auto; }
+  }
+
+  /* ============ SECTION 1: TICKET / FORM ============ */
+  #ticket{
+    background:
+      radial-gradient(circle at 85% 20%, rgba(63,221,160,0.08), transparent 40%),
+      var(--bg);
+  }
+  .hero-grid{
+    display:grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 64px;
+    width:100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: start;
+  }
+  .hero-copy h1{
+    font-size: clamp(34px, 4.4vw, 54px);
+    line-height: 1.08;
+    margin: 18px 0 22px;
+    font-weight: 700;
+  }
+  .hero-copy h1 em{
+    font-style: normal;
+    color: var(--teal);
+  }
+  .hero-copy p{
+    color: var(--text-dim);
+    font-size: 16px;
+    max-width: 44ch;
+    margin-bottom: 28px;
+  }
+  .stat-row{
+    display:flex;
+    gap: 34px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+  .stat{ font-family:'Space Mono', monospace; }
+  .stat b{
+    font-size: 26px;
+    color: var(--text);
+    display:block;
+  }
+  .stat span{
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+
+  /* the ticket */
+  .ticket-card{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    position: relative;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  }
+  .ticket-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    padding: 22px 26px 18px;
+    border-bottom: 1px dashed var(--line);
+  }
+  .ticket-head .tnum{
+    font-family:'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .ticket-head .tstatus{
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    padding: 3px 9px;
+    border-radius: 2px;
+  }
+  form{ padding: 24px 26px 28px; }
+  .field{ margin-bottom: 18px; }
+  .field label{
+    display:block;
+    font-family:'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+  .field input, .field textarea{
+    width:100%;
+    background: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 12px 13px;
+    resize: vertical;
+    transition: border-color .2s ease;
+  }
+  .field textarea{ min-height: 96px; }
+  .field input:focus, .field textarea:focus{
+    outline:none;
+    border-color: var(--teal);
+  }
+  .ticket-footer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 14px;
+    padding-top: 6px;
+    flex-wrap: wrap;
+  }
+  .submit-btn{
+    background: var(--teal);
+    color: #0F1512;
+    border:none;
+    font-family: 'Space Mono', monospace;
+    font-weight:700;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 13px 22px;
+    border-radius: 3px;
+    cursor:pointer;
+    transition: background .2s ease, transform .15s ease;
+  }
+  .submit-btn:hover{ background: #58e6b1; transform: translateY(-1px); }
+  .submit-btn:focus-visible{ outline: 2px solid var(--amber); outline-offset:3px; }
+  .ticket-note{
+    font-size: 11.5px;
+    color: var(--text-dim);
+    max-width: 30ch;
+  }
+  .ticket-note a{ color: var(--teal); text-decoration: none; }
+
+  /* perforation dots along ticket edge */
+  .qr-stub{
+    display:flex;
+    align-items:center;
+    gap: 16px;
+    padding: 18px 26px 24px;
+    border-top: 1px dashed var(--line);
+  }
+  .qr-box{
+    background: #fff;
+    padding: 8px;
+    border-radius: 4px;
+    flex-shrink:0;
+    line-height:0;
+  }
+  .qr-img{ width: 76px; height: 76px; display:block; }
+  .qr-label{
+    font-family:'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 4px;
+  }
+  .qr-sub{
+    font-size: 12.5px;
+    color: var(--text-dim);
+    max-width: 26ch;
+  }
+
+  .perf{
+    position:absolute;
+    left: -6px; top: 40%;
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+  }
+  .perf span{
+    width:10px; height:10px;
+    border-radius:50%;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    display:block;
+  }
+
+  /* ============ DEVICE SECTIONS SHARED ============ */
+  .device-grid{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width:100%;
+    align-items:center;
+  }
+  .device-copy .eyebrow{ margin-bottom: 16px; }
+  .device-copy h2{
+    font-size: clamp(28px, 3.6vw, 42px);
+    line-height:1.12;
+    margin-bottom: 18px;
+  }
+  .device-copy p{
+    color: var(--text-dim);
+    max-width: 46ch;
+    margin-bottom: 26px;
+  }
+  .fault-list{
+    list-style:none;
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+  }
+  .fault-list li{
+    font-size: 13.5px;
+    color: var(--text);
+    display:flex;
+    align-items:center;
+    gap: 9px;
+  }
+  .fault-list li::before{
+    content:"";
+    width:6px; height:6px;
+    background: var(--teal);
+    border-radius:1px;
+    flex-shrink:0;
+  }
+  .price-tag{
+    display:inline-flex;
+    align-items:baseline;
+    gap:8px;
+    margin-top: 28px;
+    font-family:'Space Mono', monospace;
+  }
+  .price-tag b{ font-size: 22px; color: var(--amber); }
+  .price-tag span{ font-size: 12px; color: var(--text-dim); }
+
+  .art-frame{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: 340px;
+    position:relative;
+    overflow:hidden;
+  }
+  .art-frame::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                       linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .art-frame svg{ position:relative; z-index:1; width:100%; max-width: 340px; height:auto; }
+
+  #ps5{ background: var(--bg); }
+  #computers{ background: var(--panel); }
+  #switch{ background: var(--bg); border-bottom:none; }
+
+  @media (max-width: 900px){
+    .hero-grid, .device-grid{ grid-template-columns: 1fr; }
+    section{ padding: 110px 6vw 70px; }
+    .fault-list{ grid-template-columns: 1fr; }
+  }
+
+  footer{
+    padding: 34px 8vw;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap: 14px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+    font-family: 'Space Mono', monospace;
+  }
+  footer a{ text-decoration:none; color: var(--text-dim); }
+  footer a:hover{ color: var(--teal); }
+</style>
 </head>
 <body>
-  <header class="nav">
-    <img src="images/cloudnic-logo.png" alt="CloudNic Logo" class="logo"/>
-    <nav>
-      <a href="index.html">Home</a>
-      <a href="services.html">What We Do</a>
-      <a href="about.html">About</a>
-      <a href="products.html">Products</a>
-    </nav>
-  </header>
 
-  <section class="hero">
-    <h1>Welcome to CloudNic Ltd.</h1>
-    <p>Innovative Cloud Networking Solutions</p>
-  </section>
+<header class="site-nav">
+  <a href="#ticket" class="logo-link"><img src="data:image/png;base64,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" alt="CloudNic - Cloud Networking" class="logo-img"></a>
+  <nav class="nav-links">
+    <a href="#ticket">Request repair</a>
+    <a href="#ps5">PS5</a>
+    <a href="#computers">Laptops & desktops</a>
+    <a href="#switch">Switch</a>
+  </nav>
+</header>
 
-  <section class="services">
-    <h2>What We Do</h2>
-    <p>Cloud infrastructure, network engineering, and scalable solutions for modern businesses.</p>
-  </section>
+<div class="rail" id="rail">
+  <a href="#ticket" data-target="ticket" aria-label="Go to repair request section"></a>
+  <a href="#ps5" data-target="ps5" aria-label="Go to PS5 section"></a>
+  <a href="#computers" data-target="computers" aria-label="Go to laptops and desktops section"></a>
+  <a href="#switch" data-target="switch" aria-label="Go to Nintendo Switch section"></a>
+</div>
 
-  <section class="pricing">
-    <h2>Service Charges</h2>
-    <ul>
-      <li>Basic Setup – £299</li>
-      <li>Advanced Cloud Integration – £999</li>
-      <li>Managed Services – Contact us</li>
-    </ul>
-  </section>
+<!-- SECTION 1: FORM -->
+<section id="ticket">
+  <div class="hero-grid">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">CloudNic Repairs</p>
+      <h1>Broken console.<br>Dead laptop.<br><em>Fixed properly.</em></h1>
+      <p>Tell us what's wrong and we'll get back to you with a diagnosis and a fair price — usually within one working day. No jargon, no guesswork.</p>
+      <div class="stat-row">
+        <div class="stat"><b>1–3 days</b><span>Typical turnaround</span></div>
+        <div class="stat"><b>90 day</b><span>Repair warranty</span></div>
+        <div class="stat"><b>Free</b><span>No-fix, no-fee diagnosis</span></div>
+      </div>
+    </div>
 
-  <section class="about">
-    <h2>About CloudNic</h2>
-    <p>We're a passionate team delivering secure, scalable cloud network systems.</p>
-  </section>
+    <div class="ticket-card reveal">
+      <div class="perf">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="ticket-head">
+        <div>
+          <div class="tnum">TICKET REF — CN-000000</div>
+        </div>
+        <div class="tstatus">Awaiting details</div>
+      </div>
+      <form id="repair-form" action="mailto:info@cloudnic.co.uk" method="post" enctype="text/plain">
+        <div class="field">
+          <label for="name">Full name</label>
+          <input type="text" id="name" name="Full Name" placeholder="Jordan Smith" required>
+        </div>
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" name="Email" placeholder="jordan@email.com" required>
+        </div>
+        <div class="field">
+          <label for="desc">What needs fixing?</label>
+          <textarea id="desc" name="Description" placeholder="e.g. PS5 won't power on, just beeps three times and shuts off." required></textarea>
+        </div>
+        <div class="ticket-footer">
+          <button type="submit" class="submit-btn">Send request →</button>
+          <p class="ticket-note">Opens your email app addressed to <a href="mailto:info@cloudnic.co.uk">info@cloudnic.co.uk</a></p>
+        </div>
+      </form>
+      <div class="qr-stub">
+        <div class="qr-box">
+          <img src="data:image/png;base64,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" alt="QR code linking to cloudnic.co.uk" class="qr-img">
+        </div>
+        <div class="qr-copy">
+          <p class="qr-label">On your phone?</p>
+          <p class="qr-sub">Scan to open this page at cloudnic.co.uk</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <section class="contact">
-    <h2>Contact Us</h2>
-    <form action="php/sendmail.php" method="POST">
-      <input type="text" name="name" placeholder="Your Name" required />
-      <input type="email" name="email" placeholder="Your Email" required />
-      <input type="text" name="subject" placeholder="Subject" required />
-      <textarea name="message" placeholder="Your Message" required></textarea>
-      <button type="submit">Send</button>
-    </form>
-  </section>
+<!-- SECTION 2: PS5 -->
+<section id="ps5">
+  <div class="device-grid">
+    <div class="art-frame reveal">
+      <svg viewBox="0 0 300 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- stylised console tower -->
+        <path d="M105 20 C95 20 88 28 88 40 L88 300 C88 312 95 320 105 320 L120 320 L120 20 Z" fill="#2A2F35" stroke="#3FDDA0" stroke-width="1.5"/>
+        <path d="M195 20 C205 20 212 28 212 40 L212 300 C212 312 205 320 195 320 L180 320 L180 20 Z" fill="#2A2F35" stroke="#3FDDA0" stroke-width="1.5"/>
+        <rect x="120" y="14" width="60" height="312" rx="6" fill="#181B1F" stroke="#454C55" stroke-width="1.5"/>
+        <rect x="132" y="40" width="36" height="130" rx="3" fill="#14171B" stroke="#333A42"/>
+        <circle cx="150" cy="230" r="9" fill="#0F1512" stroke="#F2A93B" stroke-width="2"/>
+        <rect x="138" y="255" width="24" height="4" rx="2" fill="#3FDDA0"/>
+        <rect x="60" y="330" width="180" height="6" rx="3" fill="#1D2126" stroke="#333A42"/>
+      </svg>
+    </div>
+    <div class="device-copy reveal">
+      <p class="eyebrow">Section 02</p>
+      <h2>PlayStation 5 repairs</h2>
+      <p>From disc drives that won't eject to consoles that won't power on at all — we work on both disc and digital PS5 models, including the Slim.</p>
+      <ul class="fault-list">
+        <li>Won't power on / beeps</li>
+        <li>Disc drive stuck or noisy</li>
+        <li>Overheating & fan noise</li>
+        <li>HDMI port replacement</li>
+        <li>Controller drift</li>
+        <li>Software & storage issues</li>
+      </ul>
+      <div class="price-tag"><b>from £39</b><span>diagnostic fee, waived if we do the repair</span></div>
+    </div>
+  </div>
+</section>
 
-  <footer>
-    <img src="images/cloudnic-logo.png" alt="CloudNic Logo" class="footer-logo"/>
-    <p>📞 +44 1234 567890</p>
-  </footer>
+<!-- SECTION 3: LAPTOPS & DESKTOPS -->
+<section id="computers">
+  <div class="device-grid">
+    <div class="device-copy reveal">
+      <p class="eyebrow">Section 03</p>
+      <h2>Laptop & desktop repairs</h2>
+      <p>Screen replacements, slow machines, virus removal, failed hard drives, water damage — we service all major brands, Windows and Mac.</p>
+      <ul class="fault-list">
+        <li>Cracked screen replacement</li>
+        <li>Won't boot / blue screen</li>
+        <li>Slow performance & upgrades</li>
+        <li>Virus & malware removal</li>
+        <li>Data recovery</li>
+        <li>Keyboard & battery swaps</li>
+      </ul>
+      <div class="price-tag"><b>from £29</b><span>diagnostic fee, waived if we do the repair</span></div>
+    </div>
+    <div class="art-frame reveal">
+      <svg viewBox="0 0 320 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- desktop tower -->
+        <rect x="20" y="40" width="90" height="200" rx="6" fill="#181B1F" stroke="#454C55" stroke-width="1.5"/>
+        <rect x="34" y="58" width="62" height="34" rx="3" fill="#14171B" stroke="#333A42"/>
+        <circle cx="65" cy="200" r="12" fill="none" stroke="#3FDDA0" stroke-width="2"/>
+        <rect x="46" y="150" width="38" height="6" rx="3" fill="#333A42"/>
+        <rect x="46" y="164" width="38" height="6" rx="3" fill="#333A42"/>
+        <!-- laptop -->
+        <path d="M135 230 L305 230 L295 250 L145 250 Z" fill="#23282E" stroke="#454C55" stroke-width="1.5"/>
+        <rect x="140" y="90" width="150" height="140" rx="6" fill="#181B1F" stroke="#454C55" stroke-width="1.5"/>
+        <rect x="150" y="100" width="130" height="118" rx="2" fill="#14171B" stroke="#3FDDA0" stroke-width="1.5"/>
+        <path d="M180 150 L215 120 L215 180 Z" fill="#F2A93B" opacity="0.85"/>
+      </svg>
+    </div>
+  </div>
+</section>
 
-  <script src="js/main.js"></script>
+<!-- SECTION 4: SWITCH -->
+<section id="switch">
+  <div class="device-grid">
+    <div class="art-frame reveal">
+      <svg viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="30" y="60" width="70" height="120" rx="14" fill="#2A2F35" stroke="#E2593B" stroke-width="2"/>
+        <rect x="220" y="60" width="70" height="120" rx="14" fill="#2A2F35" stroke="#3FDDA0" stroke-width="2"/>
+        <rect x="100" y="50" width="120" height="140" rx="8" fill="#181B1F" stroke="#454C55" stroke-width="1.5"/>
+        <rect x="112" y="62" width="96" height="86" rx="3" fill="#14171B" stroke="#333A42"/>
+        <circle cx="55" cy="90" r="10" fill="none" stroke="#E2593B" stroke-width="2"/>
+        <circle cx="255" cy="90" r="7" fill="#3FDDA0"/>
+        <circle cx="270" cy="110" r="7" fill="#3FDDA0"/>
+        <circle cx="255" cy="130" r="7" fill="#3FDDA0"/>
+        <circle cx="240" cy="110" r="7" fill="#3FDDA0"/>
+        <rect x="140" y="160" width="40" height="6" rx="3" fill="#333A42"/>
+      </svg>
+    </div>
+    <div class="device-copy reveal">
+      <p class="eyebrow">Section 04</p>
+      <h2>Nintendo Switch 2 & Switch Lite</h2>
+      <p>Joy-Con drift, cracked screens, charging port faults and dock issues — we repair the original Switch, Switch Lite, and the new Switch 2.</p>
+      <ul class="fault-list">
+        <li>Joy-Con / controller drift</li>
+        <li>Screen replacement</li>
+        <li>Charging port repair</li>
+        <li>Won't charge / won't turn on</li>
+        <li>Dock & HDMI output faults</li>
+        <li>Battery replacement</li>
+      </ul>
+      <div class="price-tag"><b>from £25</b><span>diagnostic fee, waived if we do the repair</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 CloudNic.co.uk</span>
+  <a href="mailto:info@cloudnic.co.uk">info@cloudnic.co.uk</a>
+</footer>
+
+<script>
+  // scroll-reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+
+  // rail active state
+  const sections = document.querySelectorAll('section[id]');
+  const railLinks = document.querySelectorAll('.rail a');
+  const railObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        railLinks.forEach(l=>l.classList.remove('active'));
+        const active = document.querySelector('.rail a[data-target="'+entry.target.id+'"]');
+        if(active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+  sections.forEach(s => railObserver.observe(s));
+
+  // live ticket ref number
+  document.querySelector('.tnum').textContent = 'TICKET REF — CN-' + Math.floor(100000 + Math.random()*899999);
+</script>
+
 </body>
 </html>
